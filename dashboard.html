@@ -166,6 +166,15 @@ canvas#bgCanvas {
 .grid a:nth-child(22){ background:linear-gradient(to right,#5305f0,#ee0332);}
 .grid a:nth-child(23){ background:linear-gradient(to right,#0323f5,#f9ae00);}
 .grid a:nth-child(24){ background:linear-gradient(to right,#ff0404,#28f504);}
+    /* ✅ FORCE DESKTOP VIEW ON MOBILE */
+@media (max-width: 768px) {
+    html, body {
+        width: 1400px;
+        min-width: 1400px;
+    }
+    body {
+        overflow-x: auto;
+    }
 
 </style>
 </head>
@@ -298,6 +307,7 @@ window.addEventListener('resize', ()=>{
 
 </body>
 </html>
+
 
 
 
