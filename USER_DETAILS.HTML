@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1400, initial-scale=0.35, maximum-scale=1.0, user-scalable=yes">
+
 <title>Daily Farmer Notes - Smart Cattle</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -80,6 +81,14 @@ th {
 }
 .status-good { color: green; font-weight: bold; }
 .status-bad { color: red; font-weight: bold; }
+@media (max-width: 768px) {
+    html, body {
+        width: 1400px;
+        min-width: 1400px;
+    }
+    body {
+        overflow-x: auto;
+    }
 </style>
 </head>
 
@@ -257,3 +266,4 @@ window.onload = () => {
 
 </body>
 </html>
+
