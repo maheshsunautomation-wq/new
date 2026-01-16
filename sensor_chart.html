@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1400, initial-scale=0.35, maximum-scale=1.0, user-scalable=yes">
+
 <title>Sensor Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -44,7 +45,15 @@ canvas{background:#111; border-radius:10px; width:800px; max-width:95%;}
   50% { box-shadow:0 0 25px #ff0000; }
   100% { box-shadow:0 0 8px #ff0000; }
 }
-
+/* ✅ FORCE DESKTOP VIEW ON MOBILE */
+@media (max-width: 768px) {
+    html, body {
+        width: 1400px;
+        min-width: 1400px;
+    }
+    body {
+        overflow-x: auto;
+    }
 .status-item{
   display:flex; justify-content:space-between; align-items:center;
   padding:8px 12px; border-radius:8px; font-weight:bold;
@@ -298,3 +307,4 @@ setInterval(() => { loadData(); }, 5000);
 
 </body>
 </html>
+
