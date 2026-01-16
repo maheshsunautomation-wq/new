@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1400, initial-scale=0.35, maximum-scale=1.0, user-scalable=yes">
+
 <title>Cow Task History</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -24,6 +25,14 @@
   th { background:rgba(120,0,255,0.25); text-shadow:0 0 8px rgba(0,150,255,0.8); }
   .delete-btn { background:#ff2f4b; color:#fff; border:none; padding:8px 12px; border-radius:12px; cursor:pointer; font-size:14px; font-weight:600; box-shadow:0 0 10px rgba(255,0,80,0.6); }
   .delete-btn:hover { background:#c80036; transform:translateY(-1px); }
+@media (max-width: 768px) {
+    html, body {
+        width: 1400px;
+        min-width: 1400px;
+    }
+    body {
+        overflow-x: auto;
+    }
 </style>
 </head>
 <body>
@@ -148,4 +157,5 @@ window.onload = loadTasks;
 
 </body>
 </html>
+
 
