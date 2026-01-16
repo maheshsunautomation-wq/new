@@ -46,14 +46,7 @@ canvas{background:#111; border-radius:10px; width:800px; max-width:95%;}
   100% { box-shadow:0 0 8px #ff0000; }
 }
 /* ✅ FORCE DESKTOP VIEW ON MOBILE */
-@media (max-width: 768px) {
-    html, body {
-        width: 1400px;
-        min-width: 1400px;
-    }
-    body {
-        overflow-x: auto;
-    }
+
 .status-item{
   display:flex; justify-content:space-between; align-items:center;
   padding:8px 12px; border-radius:8px; font-weight:bold;
@@ -100,6 +93,14 @@ canvas{background:#111; border-radius:10px; width:800px; max-width:95%;}
   transform: scale(1.05);
   background: #0088cc;
 }
+  @media (max-width: 768px) {
+    html, body {
+        width: 1400px;
+        min-width: 1400px;
+    }
+    body {
+        overflow-x: auto;
+    }
 </style>
 </head>
 
@@ -307,4 +308,5 @@ setInterval(() => { loadData(); }, 5000);
 
 </body>
 </html>
+
 
