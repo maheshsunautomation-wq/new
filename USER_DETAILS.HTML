@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Farmer Notes - Smart Cattle</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #f0f4f8;
+}
+header {
+  background: linear-gradient(90deg,#1a73e8,#00bfa5);
+  color: #fff;
+  padding: 25px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+main {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  padding: 20px;
+}
+.panel-left, .panel-right {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+h2 { text-align: center; }
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+}
+input, select, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+textarea { resize: none; }
+button {
+  background: #1a73e8;
+  color: white;
+  border: none;
+  font-weight: bold;
+  margin-top: 15px;
+  cursor: pointer;
+}
+button:hover { opacity: 0.9; }
+.delete-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th, td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+th {
+  background: #00bfa5;
+  color: #fff;
+}
+.status-good { color: green; font-weight: bold; }
+.status-bad { color: red; font-weight: bold; }
+</style>
+</head>
+
+<body>
+
+<header>Smart Cattle – Daily Farmer Notes</header>
+
+<main>
+
+<!-- LEFT FORM -->
+<div class="panel-left">
+<h2>Enter Daily Note</h2>
+
+<form id="notesForm">
+
+<label>Date & Time</label>
+<input type="datetime-local" id="dateTime" required>
+
+<label>Cow ID</label>
+<input type="text" id="cowId" required>
+
+<label>User Name</label>
+<input type="text" id="userName" required>
+
+<label>Feed Batch</label>
+<select id="feedBatch" required>
+<option value="">Select</option>
+<option>A</option>
+<option>B</option>
+<option>C</option>
+</select>
+
+<label>Pregnancy</label>
+<select id="pregnancy" required>
+<option value="">Select</option>
+<option>Pregnant</option>
+<option>Not Pregnant</option>
+</select>
+
+<label>Medicine</label>
+<input type="text" id="medicine">
+
+<label>Health</label>
+<select id="health" required>
+<option value="">Select</option>
+<option value="Good">Good</option>
+<option value="Bad">Bad</option>
+</select>
+
+<textarea id="reason" placeholder="Reason if health is Bad"></textarea>
+
+<button type="submit">Save Note</button>
+
+</form>
+</div>
+
+<!-- RIGHT HISTORY -->
+<div class="panel-right">
+<h2>History (From Google Sheet)</h2>
+
+<table id="notesTable">
+<thead>
+<tr>
+<th>Date & Time</th>
+<th>Cow</th>
+<th>User</th>
+<th>Feed</th>
+<th>Pregnancy</th>
+<th>Medicine</th>
+<th>Health</th>
+<th>Reason</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
+
+</main>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykx309hwMFF3t1gwrQxSFku0XF9Y8m-7U-fNlNCPfoj5eOIwzKOaAboxL6PibcBtW-tA/exec";
+
+const health = document.getElementById("health");
+const reason = document.getElementById("reason");
+const tableBody = document.querySelector("#notesTable tbody");
+
+// ---------- RESET FORM (NO AUTO TIME) ----------
+function resetForm() {
+  document.getElementById("notesForm").reset();
+  reason.style.display = "none";
+}
+
+// ---------- HEALTH LOGIC ----------
+reason.style.display = "none";
+health.onchange = () => {
+  reason.style.display = health.value === "Bad" ? "block" : "none";
+  if (health.value !== "Bad") reason.value = "";
+};
+
+// ---------- LOAD HISTORY ----------
+function loadHistory() {
+  fetch(`${SCRIPT_URL}?action=get`)
+    .then(res => res.json())
+    .then(data => {
+      tableBody.innerHTML = "";
+
+      if (data.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="9">No records found</td></tr>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const row = tableBody.insertRow();
+        row.innerHTML = `
+          <td>${item.dateTime}</td>
+          <td>${item.cowId}</td>
+          <td>${item.username}</td>
+          <td>${item.feedBatch}</td>
+          <td>${item.pregnancy}</td>
+          <td>${item.medicine}</td>
+          <td class="${item.health === "Good" ? "status-good" : "status-bad"}">${item.health}</td>
+          <td>${item.reason}</td>
+          <td><button class="delete-btn">Delete</button></td>
+        `;
+        row.querySelector(".delete-btn").onclick = () => deleteRecord(item.id);
+      });
+    });
+}
+
+// ---------- SAVE ----------
+document.getElementById("notesForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const payload = {
+    dateTime: new Date(dateTime.value).toISOString(),
+    cowId: cowId.value,
+    username: userName.value,
+    feedBatch: feedBatch.value,
+    pregnancy: pregnancy.value,
+    medicine: medicine.value || "-",
+    health: health.value,
+    reason: reason.value || "-"
+  };
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    resetForm();    // ✅ clear inputs (manual date only)
+    loadHistory();  // reload from Google Sheet
+    alert("Saved successfully ✅");
+  });
+});
+
+// ---------- DELETE ----------
+function deleteRecord(id) {
+  if (!confirm("Delete this record?")) return;
+
+  fetch(`${SCRIPT_URL}?action=delete&id=${id}`)
+    .then(() => {
+      loadHistory();
+      alert("Deleted successfully ❌");
+    });
+}
+
+// ---------- INITIAL LOAD ----------
+window.onload = () => {
+  resetForm();    // inputs empty on refresh
+  loadHistory();  // history from sheet
+};
+</script>
+
+</body>
+</html>

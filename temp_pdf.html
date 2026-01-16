@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temperature PDF Auto Download</title>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #16e404ee, #fc0606);
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📄 Generating Temperature PDF...</h2>
+  <p>Please wait, your download will start automatically.</p>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+
+      const url = "https://script.google.com/macros/s/AKfycbwEDijVULSbBQaJgyOwIsbbT8WB1JvqG0AbJrpBDPDMJfQ-iEHVCI6DXs_J7YLv0b4/exec";
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // ✅ TABLE HEADERS
+        const headers = ["Date", "Time", "Temperature", "Humidity", "Water 1", "Water 2"];
+
+        // ✅ HANDLE OBJECT FORMAT (IMPORTANT FIX)
+        const rows = data.map(item => [
+          item.date,
+          item.time,
+          item.temp,
+          item.hum,
+          item.water1,
+          item.water2
+        ]);
+
+        const doc = new jsPDF();
+        doc.setFontSize(14);
+        doc.text("Temperature Report", 14, 15);
+
+        doc.autoTable({
+          head: [headers],
+          body: rows,
+          startY: 20,
+          theme: "grid",
+          styles: {
+            fontSize: 9
+          },
+          headStyles: {
+            fillColor: [102, 126, 234]
+          }
+        });
+
+        doc.save("temperature_report.pdf");
+
+      } catch (err) {
+        alert("Error generating PDF");
+        console.error(err);
+      }
+    }
+
+    window.onload = generatePDF;
+  </script>
+
+</body>
+</html>
+

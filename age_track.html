@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cow Age Tracking – Industrial Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:Segoe UI, Arial, sans-serif;
+}
+body{
+  margin:0;
+  background:#f2f4f7;
+  color:#222;
+}
+.header{
+  background:#1f2937;
+  color:#fff;
+  padding:15px 25px;
+  font-size:20px;
+}
+.container{
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
+}
+.card{
+  background:#fff;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  padding:18px;
+  margin-bottom:20px;
+}
+.card-title{
+  font-weight:600;
+  margin-bottom:12px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;
+}
+input, button{
+  padding:10px;
+  border-radius:4px;
+  border:1px solid #9ca3af;
+}
+button{
+  background:#2563eb;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+}
+button:hover{
+  background:#1d4ed8;
+}
+.status{
+  margin-top:10px;
+  color:#15803d;
+  font-weight:600;
+  display:none;
+}
+.chart-container{
+  height:360px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Cow Age Tracking System</div>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Manual Data Entry</div>
+    <div class="form-grid">
+      <input type="date" id="date">
+      <input type="text" id="cow" placeholder="Cow Name">
+      <input type="number" id="age" placeholder="Cow Age">
+      <button onclick="saveData()">Save</button>
+    </div>
+    <div id="statusMsg" class="status">✔ Data stored successfully</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Age Trend (Year vs Age)</div>
+    <div class="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycbzctj2W12qoj4fatl6X-VPhmpEzeHStQSK-HxaXmFFW3q8gTWjEvknIodSG9vgLgW8I/exec";
+let chart;
+
+// Industrial color pool
+const COLOR_POOL = [
+  "#2563eb",
+  "#dc2626",
+  "#16a34a",
+  "#7c3aed",
+  "#ca8a04",
+  "#000000",
+  "#0f766e"
+];
+
+function saveData(){
+  if(!date.value || !cow.value || !age.value){
+    alert("Please fill all fields");
+    return;
+  }
+
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      date:date.value,
+      cow:cow.value,
+      age:age.value
+    })
+  }).then(()=>{
+    showStatus();
+    clearInputs();
+    loadChart();
+  });
+}
+
+function showStatus(){
+  statusMsg.style.display="block";
+  setTimeout(()=>statusMsg.style.display="none",3000);
+}
+
+function clearInputs(){
+  date.value="";
+  cow.value="";
+  age.value="";
+}
+
+function loadChart(){
+  fetch(URL)
+    .then(r=>r.json())
+    .then(rows=>{
+
+      const cowMap = {};
+      const cowOrder = [];
+      const currentYear = new Date().getFullYear();
+
+      rows.forEach(r=>{
+        const startYear = new Date(r[0]).getFullYear();
+        const cowName = r[1];
+        const startAge = Number(r[2]);
+
+        if(!cowMap[cowName]){
+          cowMap[cowName] = [];
+          cowOrder.push(cowName);
+        }
+
+        cowMap[cowName].push({ startYear, startAge });
+      });
+
+      const datasets = cowOrder.map((cowName, index)=>{
+        const points = [];
+
+        cowMap[cowName].forEach(entry=>{
+          for(let y=entry.startYear; y<=currentYear; y++){
+            points.push({
+              x:y,
+              y:entry.startAge + (y-entry.startYear)
+            });
+          }
+        });
+
+        return {
+          label:cowName,
+          data:points,
+          borderColor:COLOR_POOL[index % COLOR_POOL.length],
+          borderWidth:2,
+          tension:0.25,
+          pointRadius:4,
+          colorIndex:index % COLOR_POOL.length
+        };
+      });
+
+      if(chart) chart.destroy();
+
+      chart = new Chart(chartEl,{
+        type:"line",
+        data:{ datasets },
+        options:{
+          parsing:false,
+          plugins:{
+            legend:{
+              position:"bottom",
+              onClick:(e,item,legend)=>{
+                const ds = legend.chart.data.datasets[item.datasetIndex];
+                ds.colorIndex = (ds.colorIndex + 1) % COLOR_POOL.length;
+                ds.borderColor = COLOR_POOL[ds.colorIndex];
+                legend.chart.update();
+              }
+            }
+          },
+          scales:{
+            x:{
+              type:"linear",
+              ticks:{ stepSize:1 },
+              title:{ display:true, text:"Year" }
+            },
+            y:{
+              title:{ display:true, text:"Cow Age" }
+            }
+          }
+        }
+      });
+    });
+}
+
+const chartEl = document.getElementById("chart");
+loadChart();
+</script>
+
+</body>
+</html>

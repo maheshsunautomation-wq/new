@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cow Medicine Report PDF</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  h2 { font-size: 22px; }
+  p { font-size: 16px; }
+</style>
+</head>
+<body>
+
+<h2>📄 Generating Cow Medicine PDF...</h2>
+<p>Please wait, your download will start automatically.</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+// Convert sheet value (ISO string or Date) to DD/MM/YYYY
+function formatSheetDate(value) {
+  if (!value) return "";
+  let d = value;
+  if (typeof value === "string") d = new Date(value);
+  else if (!(value instanceof Date)) return value.toString();
+
+  return d.toLocaleDateString("en-GB"); // DD/MM/YYYY
+}
+
+// Convert sheet value (ISO string or Date) to HH:MM AM/PM
+function formatSheetTime(value) {
+  if (!value) return "";
+  let d = value;
+  if (typeof value === "string") d = new Date(value);
+  else if (!(value instanceof Date)) return value.toString();
+
+  let hours = d.getHours();
+  let minutes = d.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  return `${hours.toString().padStart(2,"0")}:${minutes.toString().padStart(2,"0")} ${ampm}`;
+}
+
+async function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbzBjyqzhpKvhLAecbrUpNZRvTxKzJ25HhyX8v-PYNUxDsYC2gg0m14QdJnQKNjRZqwD/exec?action=get";
+
+  try {
+    const response = await fetch(webAppUrl);
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const data = await response.json();
+    if (!data || data.length === 0) {
+      alert("⚠️ No data found in the sheet!");
+      return;
+    }
+
+    const headers = ["Date","Time","AM/PM","Name","Cow ID","Medicine","Reason"];
+    const rows = data.map(r => [
+      formatSheetDate(r["Date"]),
+      formatSheetTime(r["Time"]),
+      r["AM/PM"] || "",
+      r["Name"] || "",
+      r["Cow ID"] || "",
+      r["Medicine"] || "",
+      r["Reason"] || ""
+    ]);
+
+    const doc = new jsPDF("landscape");
+    doc.setFontSize(16);
+    doc.text("Cow Medicine & Health Report", 14, 15);
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: 22,
+      theme: "grid",
+      styles: { fontSize: 10 }
+    });
+
+    doc.save("cow_medicine_report.pdf");
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ ERROR fetching data! Check Web App deployment and sheet headers.");
+  }
+}
+
+window.onload = generatePDF;
+</script>
+
+</body>
+</html>

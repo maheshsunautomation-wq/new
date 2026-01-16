@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cow Weight Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:Roboto,Arial,sans-serif;
+  text-align:center;
+  padding:20px;
+}
+h2{margin-bottom:20px}
+canvas{
+  background:linear-gradient(180deg,#0b0b0b,#000);
+  border-radius:14px;
+  max-width:96%;
+}
+#colorPanel{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:15px
+}
+#colorPanel label{
+  margin:0 10px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px
+}
+input[type=color]{
+  width:30px;
+  height:20px;
+  border:none;
+  border-radius:5px
+}
+#statusPanel{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:20px
+}
+.status-item{
+  padding:14px 20px;
+  margin:8px;
+  border-radius:12px;
+  background:#111;
+  border-left:5px solid #666
+}
+.normal{border-color:#00ff5a}
+.alert{
+  border-color:#ff1a1a;
+  color:#ffb3b3
+}
+.blink{
+  animation:blink 1s infinite
+}
+@keyframes blink{
+  50%{box-shadow:0 0 18px #ff0000}
+}
+</style>
+</head>
+
+<body>
+
+<h2>🐄 Cow Weight Monitoring</h2>
+<div id="colorPanel"></div>
+<canvas id="cowChart"></canvas>
+<div id="statusPanel"></div>
+
+<script>
+const apiURL="https://script.google.com/macros/s/AKfycbzTagC0U6sqxYG3F3CotK3-FiurddTrMAjbt_cQNSWk5lQQHsziVmZsdili1kSCty_YOQ/exec";
+
+let chart, cowColors={}, blinkOn=true;
+
+async function loadData(){
+  const res = await fetch(apiURL);
+  const rows = await res.json();
+  if(!rows.length) return;
+
+  // Unique cows
+  const cows = [...new Set(rows.map(r => r.cow))];
+
+  // Original dates for dataset mapping
+  const originalDates = [...new Set(rows.map(r => r.date))]
+                        .sort((a,b)=>{
+                          // Parse DD/MM/YYYY manually
+                          const [d1,m1,y1]=a.split('/').map(Number);
+                          const [d2,m2,y2]=b.split('/').map(Number);
+                          return new Date(y1,m1-1,d1)-new Date(y2,m2-1,d2);
+                        });
+
+  // Labels for display (DD MM YYYY)
+  const labels = originalDates.map(d=>{
+    const parts = d.split('/');
+    if(parts.length!==3) return '';
+    const day = parseInt(parts[0],10);
+    const month = parseInt(parts[1],10)-1;
+    const year = parseInt(parts[2],10);
+    const dt = new Date(year, month, day);
+    if(isNaN(dt)) return '';
+    return `${String(day).padStart(2,'0')} ${String(month+1).padStart(2,'0')} ${year}`;
+  }).filter(l => l !== ''); // remove invalid dates
+
+  // Color picker panel
+  if(Object.keys(cowColors).length === 0){
+    const preset=['#00ff5a','#00c8ff','#ff00ff','#ffff00'];
+    const panel = document.getElementById('colorPanel');
+
+    cows.forEach((c,i)=>{
+      cowColors[c] = preset[i%preset.length];
+      const inp = document.createElement('input');
+      inp.type='color';
+      inp.value=cowColors[c];
+      inp.oninput = ()=>cowColors[c] = inp.value;
+
+      const lbl = document.createElement('label');
+      lbl.textContent = c;
+      lbl.appendChild(inp);
+      panel.appendChild(lbl);
+    });
+  }
+
+  // Build datasets
+  const datasets = cows.map(cow=>{
+    const cowRows = rows.filter(r=>r.cow === cow)
+                        .sort((a,b)=>{
+                          const [d1,m1,y1]=a.date.split('/').map(Number);
+                          const [d2,m2,y2]=b.date.split('/').map(Number);
+                          return new Date(y1,m1-1,d1)-new Date(y2,m2-1,d2);
+                        });
+
+    const last = cowRows.length - 1;
+    const drop = last>0 && cowRows[last].weight < cowRows[last-1].weight;
+    const blinkDate = drop ? cowRows[last].date : null;
+
+    return {
+      label: cow,
+      data: originalDates.map(origDate=>{
+        const r = cowRows.find(x => x.date === origDate);
+        return r ? r.weight : null;
+      }),
+      borderColor: cowColors[cow],
+      borderWidth:3,
+      tension:0.35,
+      spanGaps:true,               
+      pointRadius: originalDates.map(d => d===blinkDate ? (blinkOn ? 9 : 5) : 5),
+      pointHitRadius:15,
+      pointHoverRadius:12,
+      pointHoverBorderWidth:3,
+      pointHoverBorderColor:'#ffffff',
+      pointBackgroundColor: originalDates.map(d =>
+        d===blinkDate ? '#ff0000' : cowColors[cow]
+      ),
+      blink: drop
+    };
+  });
+
+  // Create / update chart
+  if(!chart){
+    chart = new Chart(cowChart,{
+      type:'line',
+      data:{labels,datasets},
+      options:{
+        responsive:true,
+        interaction:{
+          mode:'nearest',
+          intersect:false
+        },
+        plugins:{
+          legend:{labels:{color:'#fff'}},
+          datalabels:{display:false},
+          tooltip:{
+            backgroundColor:'#111',
+            borderColor:'#00ff5a',
+            borderWidth:1,
+            titleColor:'#00ff5a',
+            bodyColor:'#fff',
+            callbacks:{
+              title:(c)=>`Date: ${c[0].label}`,
+              label:(c)=>`${c.dataset.label} → ${c.parsed.y} kg`
+            }
+          }
+        },
+        scales:{
+          x:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.15)'}},
+          y:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.15)'}}
+        }
+      }
+    });
+  }else{
+    chart.data.labels = labels;
+    chart.data.datasets = datasets;
+    chart.update();
+  }
+
+  // Status panel
+  const panel = document.getElementById('statusPanel');
+  panel.innerHTML = '';
+  datasets.forEach(d=>{
+    const div = document.createElement('div');
+    div.className='status-item '+(d.blink ? 'alert blink' : 'normal');
+    div.textContent = `${d.label}: ${d.blink ? 'Abnormal' : 'Normal'}`;
+    panel.appendChild(div);
+  });
+}
+
+// Blink animation
+setInterval(()=>{
+  blinkOn = !blinkOn;
+  if(chart) chart.update();
+},500);
+
+// Initial load + auto refresh
+loadData();
+setInterval(loadData,10000);
+</script>
+
+</body>
+</html>

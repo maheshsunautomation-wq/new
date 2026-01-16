@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cow Weight PDF Download</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff3c00, #0072ff);
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🐄 Generating Cow Weight Report</h2>
+<p>Please wait… PDF will download automatically</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+/* ✅ EXTRACT CLEAN TIME */
+function cleanTime(value) {
+
+  // If already normal time → return
+  if (/^\d{2}:\d{2}:\d{2}$/.test(value)) {
+    return value;
+  }
+
+  // If ISO date-time → extract HH:MM:SS
+  const d = new Date(value);
+  if (!isNaN(d)) {
+    return d.toLocaleTimeString("en-GB", {
+      hour12: false,
+      timeZone: "Asia/Kolkata"
+    });
+  }
+
+  return value;
+}
+
+async function generatePDF() {
+
+  const { jsPDF } = window.jspdf;
+  const url = "https://script.google.com/macros/s/AKfycbzTagC0U6sqxYG3F3CotK3-FiurddTrMAjbt_cQNSWk5lQQHsziVmZsdili1kSCty_YOQ/exec";
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const headers = ["Date", "Time", "Cow ID", "Weight (Kg)"];
+
+    const rows = data.map(item => [
+      String(item.date),              // Date already correct
+      cleanTime(String(item.time)),   // ✅ FIXED TIME
+      String(item.cow),
+      String(item.weight)
+    ]);
+
+    const doc = new jsPDF();
+    doc.setFontSize(15);
+    doc.text("Cow Weight Report", 14, 15);
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: 22,
+      theme: "grid",
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [0, 102, 255] }
+    });
+
+    doc.save("cow_weight_report.pdf");
+
+  } catch (err) {
+    alert("PDF generation failed");
+    console.error(err);
+  }
+}
+
+window.onload = generatePDF;
+</script>
+
+</body>
+</html>

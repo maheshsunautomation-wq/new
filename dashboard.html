@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Premium Dashboard - Multi-Color Particle Glow</title>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+body {
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-family:'Segoe UI',sans-serif;
+    position:relative;
+    overflow-x:hidden;
+    background:#0d1117;
+}
+
+/* Particle Glow Background */
+canvas#bgCanvas {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:-1;
+}
+
+/* Centered Top Text - Luxury Gold */
+.topbar {
+    position: relative; /* changed from absolute */
+    margin-top: 40px;   /* space from top */
+    margin-bottom: 70px; /* space before grids */
+    text-align: center;
+    font-size: 60px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #D4AF37, #FFD700, #bfa239, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+/* Toggle Button */
+.toggle-btn {
+    position:absolute;
+    top:90px;
+    right:20px;
+    padding:15px 35px;
+    font-size:18px;
+    font-weight:bold;
+    border:none;
+    border-radius:50px;
+    cursor:pointer;
+    color:#fff;
+    background:linear-gradient(135deg,#28a745,#1e8e3e);
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
+    transition:0.3s;
+}
+.toggle-btn.disabled {
+    background:linear-gradient(135deg,#c92a2a,#7d1b1b);
+}
+.toggle-btn:hover { transform:scale(1.07); }
+
+/* Grid Layout */
+.grid {
+     display:grid;
+    grid-template-columns:repeat(3,260px);
+    grid-auto-rows:auto;
+    gap:30px;
+    z-index:10;
+    justify-content:center;
+}
+
+/* Extra Grid Layout */
+
+
+/* Premium Buttons */
+.btn {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+
+    font-size:22px;          /* unchanged */
+    font-weight:bold;
+    color:#fff;
+
+    padding:22px 18px;       /* increased padding */
+    min-height:170px;        /* more box height */
+    line-height:1.4;         /* text breathing space */
+    text-decoration: none;   /* ✅ UNDERLINE REMOVED */
+
+
+    border-radius:20px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(145deg,#1e2a38,#111820);
+    box-shadow:6px 6px 16px #0a0f14,-6px -6px 16px #2a3c4e;
+    transition:0.3s;
+}
+
+
+
+.btn::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:20px;
+    padding:2px;
+    background:linear-gradient(135deg,#ffd700,#ffb700);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    opacity:0;
+    transition:0.3s;
+}
+.btn::after {
+    content:"";
+    position:absolute;
+    top:0;
+    left:-120%;
+    width:60%;
+    height:100%;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,0.4),transparent);
+    transform:skewX(-20deg);
+    transition:0.5s;
+}
+.btn:hover {
+    transform:translateY(-8px);
+    box-shadow:8px 8px 20px #0a0f14,-8px -8px 20px #2a3c4e;
+}
+.btn:hover::before { opacity:1; }
+.btn:hover::after { left:120%; }
+
+/* Original 3x3 Grid Button Colors */
+.grid a:nth-child(1){ background:linear-gradient(145deg,#ef0418e1,#05e2daf2);}
+.grid a:nth-child(2){ background:linear-gradient(145deg,#f60505,#0625f0f7);}
+.grid a:nth-child(3){ background:linear-gradient(145deg,#bd4bffb9,#ed0404da);}
+.grid a:nth-child(4){ background:linear-gradient(145deg,#04f052da,#06cf14f6);}
+.grid a:nth-child(5){ background:linear-gradient(145deg,#fac370b4,#fe4040ee);}
+.grid a:nth-child(6){ background:linear-gradient(145deg,#1305d9,#fbc2eb);}
+.grid a:nth-child(7){ background:linear-gradient(145deg,#ff2fc4,#efe305fc);}
+.grid a:nth-child(8){ background:linear-gradient(145deg,#ff0000de,#00ffcce8);}
+.grid a:nth-child(9){ background:linear-gradient(145deg,#f71e1e93,#ffd200);}
+.grid a:nth-child(10){ background:linear-gradient(to right,#FF7E5F,#8c8cffad);}
+.grid a:nth-child(11){ background:linear-gradient(to right,#00C6FF,#ff0037d6);}
+.grid a:nth-child(12){ background:linear-gradient(to right,#9D50BB,#4baa48);}
+.grid a:nth-child(13){ background:linear-gradient(to right,#4b43e9,#9f04aa);}
+.grid a:nth-child(14){ background:linear-gradient(to right,#f7971e,#ff0000b4);}
+.grid a:nth-child(15){ background:linear-gradient(to right,#cb072e75,#a199ffc2);}
+.grid a:nth-child(16){ background:linear-gradient(to right,#e20407,#d3ef04ee);}
+.grid a:nth-child(17){ background:linear-gradient(to right,#02f6ee,#1401e2f2);}
+.grid a:nth-child(18){ background:linear-gradient(to right,#1df401,#ed04aff3);}
+.grid a:nth-child(19){ background:linear-gradient(to right,#027213,#fe0303f3);}
+.grid a:nth-child(20){ background:linear-gradient(to right,#11e3e784,#f70606f3);}
+.grid a:nth-child(21){ background:linear-gradient(to right,#e7831184,#06f76ef3);}
+.grid a:nth-child(22){ background:linear-gradient(to right,#5305f0,#ee0332);}
+.grid a:nth-child(23){ background:linear-gradient(to right,#0323f5,#f9ae00);}
+.grid a:nth-child(24){ background:linear-gradient(to right,#ff0404,#28f504);}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="topbar">Cattle Management System</div>
+
+<button id="toggleBtn" class="toggle-btn disabled">NO ACTIVE CALL</button>
+
+<!-- Main 3x3 Grid -->
+<div class="grid">
+  <a class="btn" href="ANNA.html" target="_blank">Cattle Weigth Growth Analysis</a>
+  <a class="btn" id="sensorChartBtn" href="sensor_chart.html"  target="_blank">Environmental Safety Sensor Dashboard</a>
+  <a class="btn" href="tempchart2.html" target="_blank">Environmental Condition Chart</a>
+  <a class="btn" href="schedule.html" target="_blank">Medication Schedule Manager</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/18mjOo8xXIII-nqee21gaKGyeitE759aaZec3b6V9-B0/edit?gid=0#gid=0" target="_blank">Annual Water Requirement Prediction</a>
+  <a class="btn" href="DOCTOR.HTML" target="_blank">Veterinary Visit Records</a>
+  <a class="btn" href="investment.html" target="_blank">Farm Expenditure Entry</a>
+  <a class="btn" href="USER_DETAILS.HTML" target="_blank">Farm Activity & Health Records</a>
+  <a class="btn" href="hi.html" target="_blank">Live Sensor Monitoring</a>
+  <a class="btn" href="http://192.168.43.143" target="_blank">Live Farm Surveillance</a>
+   <a class="btn" href="age_track.html" target="_blank">Cattle Age Monitor</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/18mjOo8xXIII-nqee21gaKGyeitE759aaZec3b6V9-B0/edit?gid=0#gid=0" target="_blank">Temperature & Humidity Logs</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/1ABVxpoDeWM0YfklTgkM_j6i5taUiPGDfSwY5gAqIlyg/edit?gid=0#gid=0" target="_blank">Environmental Sensor Logs</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/1dfFH6jwJAfAGkkuUzJYXxOUNhmADsXDGI6XDhzCBm3o/edit?gid=0#gid=0" target="_blank">Cattle Records Sheet</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/1Q-m-pCDeCIWNwq235ONkD0vr6tqm7OSrABgPuI8ohyo/edit?gid=0#gid=0" target="_blank">Medication Records Sheet</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/18P3Db8ClOIe7FVOa3f60hnXI-RNr-6M4Q9U-dCHDx7A/edit?gid=0#gid=0" target="_blank">Farm Activity Logs Sheet</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/148Gbfay2ghh9d9TF3MfLbCUfYjm-vPf1Ajlx4BUhzqI/edit?gid=0#gid=0" target="_blank">Expenditure Records Sheet</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/1HzJ5DHJMAcuFK5P4D0DIZOv2RTUfyPWWnrlqUT5j3TQ/edit?gid=0#gid=0" target="_blank">Veterinary Visit Records Sheet</a>
+  <a class="btn" href="https://docs.google.com/spreadsheets/d/1xAFjYYaxs8HSCWgwN4RpKRMEGoMu-42yFQaI8pqSrAc/edit?gid=0#gid=0" target="_blank">Cattle Age Records Sheet</a>
+  <a class="btn" href="cow_pdf_1.html">Cattle Data Report (PDF)</a>
+  <a class="btn" href="temp_pdf.html" target="_blank">Temperature & Humidity Report (PDF)</a>
+  <a class="btn" href="gas_pdf.html" target="_blank">Gas & Air Quality Report (PDF)</a>
+  <a class="btn" href="INVECEMNT_PDF.HTML" target="_blank">Expenditure Summary Report (PDF)</a>
+  <a class="btn" href="visit.html" target="_blank">Veterinary Visit (PDF)</a>
+  
+  
+
+</div>
+
+
+
+<script>
+// Toggle button
+const toggleBtn = document.getElementById('toggleBtn');
+toggleBtn.addEventListener('click', () => {
+  if(toggleBtn.classList.contains('disabled')){
+    toggleBtn.classList.remove('disabled');
+    toggleBtn.textContent = 'ACTIVE CALL';
+  } else {
+    toggleBtn.classList.add('disabled');
+    toggleBtn.textContent = 'NO ACTIVE CALL';
+  }
+});
+
+
+
+// Sensor chart
+const sensorChartBtn = document.getElementById("sensorChartBtn");
+sensorChartBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const activeCall = toggleBtn.classList.contains('disabled') ? 0 : 1;
+    const url = `sensor_chart.html?activeCall=${activeCall}`;
+    window.open(url, '_blank');
+});
+
+// Multi-Color Particle Glow Background
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+function randomColor() {
+    const colors = [
+        '255,0,0',
+        '255,165,0',
+        '255,255,0',
+        '0,255,255',
+        '0,128,255',
+        '128,0,255',
+        '255,0,255',
+        '0,255,128'
+    ];
+    return colors[Math.floor(Math.random()*colors.length)];
+}
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random()*canvas.width;
+    this.y = Math.random()*canvas.height;
+    this.size = Math.random()*3 + 1;
+    this.speedX = (Math.random()-0.5)*1;
+    this.speedY = (Math.random()-0.5)*1;
+    this.color = `rgba(${randomColor()},0.4)`;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 15;
+    ctx.fill();
+  }
+}
+
+const particles = [];
+for(let i=0;i<100;i++) particles.push(new Particle());
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{p.update(); p.draw();});
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('resize', ()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
+
+
+
