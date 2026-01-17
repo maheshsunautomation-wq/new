@@ -3,11 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Premium Dashboard - Multi-Color Particle Glow</title>
-
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<title>Premium Dashboard - Cattle Management System</title>
 
 <style>
 body {
@@ -33,11 +29,11 @@ canvas#bgCanvas {
     z-index:-1;
 }
 
-/* Centered Top Text - Luxury Gold */
+/* Top Text */
 .topbar {
-    position: relative; /* changed from absolute */
-    margin-top: 40px;   /* space from top */
-    margin-bottom: 70px; /* space before grids */
+    position: relative;
+    margin-top: 40px;
+    margin-bottom: 70px;
     text-align: center;
     font-size: 60px;
     font-weight: bold;
@@ -72,7 +68,7 @@ canvas#bgCanvas {
 
 /* Grid Layout */
 .grid {
-     display:grid;
+    display:grid;
     grid-template-columns:repeat(3,260px);
     grid-auto-rows:auto;
     gap:30px;
@@ -80,26 +76,19 @@ canvas#bgCanvas {
     justify-content:center;
 }
 
-/* Extra Grid Layout */
-
-
-/* Premium Buttons */
+/* Buttons */
 .btn {
     display:flex;
     justify-content:center;
     align-items:center;
     text-align:center;
-
-    font-size:22px;          /* unchanged */
+    font-size:22px;
     font-weight:bold;
     color:#fff;
-
-    padding:22px 18px;       /* increased padding */
-    min-height:170px;        /* more box height */
-    line-height:1.4;         /* text breathing space */
-    text-decoration: none;   /* ✅ UNDERLINE REMOVED */
-
-
+    padding:22px 18px;
+    min-height:170px;
+    line-height:1.4;
+    text-decoration:none;
     border-radius:20px;
     position:relative;
     overflow:hidden;
@@ -108,21 +97,7 @@ canvas#bgCanvas {
     transition:0.3s;
 }
 
-
-
-.btn::before {
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:20px;
-    padding:2px;
-    background:linear-gradient(135deg,#ffd700,#ffb700);
-    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;
-    mask-composite:exclude;
-    opacity:0;
-    transition:0.3s;
-}
+/* Hover Effects */
 .btn::after {
     content:"";
     position:absolute;
@@ -138,10 +113,23 @@ canvas#bgCanvas {
     transform:translateY(-8px);
     box-shadow:8px 8px 20px #0a0f14,-8px -8px 20px #2a3c4e;
 }
-.btn:hover::before { opacity:1; }
 .btn:hover::after { left:120%; }
 
-/* Original 3x3 Grid Button Colors */
+/* Subtle online icon backgrounds */
+.btn::before {
+    content:"";
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:80px;
+    height:80px;
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
+    opacity:0.15;
+}
+
+/* Original button colors + icons */
 .grid a:nth-child(1){ background:linear-gradient(145deg,#ef0418e1,#05e2daf2);}
 .grid a:nth-child(2){ background:linear-gradient(145deg,#f60505,#0625f0f7);}
 .grid a:nth-child(3){ background:linear-gradient(145deg,#bd4bffb9,#ed0404da);}
@@ -166,59 +154,97 @@ canvas#bgCanvas {
 .grid a:nth-child(22){ background:linear-gradient(to right,#5305f0,#ee0332);}
 .grid a:nth-child(23){ background:linear-gradient(to right,#0323f5,#f9ae00);}
 .grid a:nth-child(24){ background:linear-gradient(to right,#ff0404,#28f504);}
-    /* ✅ FORCE DESKTOP VIEW ON MOBILE */
+
+/* Assign online icon images */
+.btn.cattle-growth::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/cow.png'); }
+.btn.sensor-dashboard::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/temperature.png'); }
+.btn.environment-chart::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/thermometer.png'); }
+.btn.schedule-manager::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/calendar.png'); }
+.btn.water-prediction::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/water.png'); }
+.btn.veterinary-records::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/stethoscope.png'); }
+.btn.farm-expenditure::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/money.png'); }
+
+/* ---- CHANGED THESE TWO BUTTON ICONS ---- */
+/* Fix for Farm Activity & Live Surveillance icons */
+.btn.farm-activity::before {
+    background-image: url('https://img.icons8.com/ios/100/ffffff/activity-history.png'); /* new working icon */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.25; /* slightly visible */
+}
+
+.btn.live-surveillance::before {
+    background-image: url('https://img.icons8.com/ios/100/ffffff/cctv.png'); /* reliable working icon */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.35; /* slightly more visible */
+}
+
+
+
+/* Remaining buttons */
+.btn.live-sensor::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/wifi.png'); }
+.btn.cattle-age::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/cow.png'); }
+.btn.temp-humidity-logs::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/thermometer.png'); }
+.btn.environment-logs::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/factory.png'); }
+.btn.cattle-records::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/cow.png'); }
+.btn.medication-records::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/pills.png'); }
+.btn.activity-logs::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/checklist.png'); }
+.btn.expenditure-records::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/money.png'); }
+.btn.vet-visit-records::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/stethoscope.png'); }
+.btn.cattle-age-records::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/cow.png'); }
+.btn.cattle-pdf::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/pdf.png'); }
+.btn.temp-pdf::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/pdf.png'); }
+.btn.gas-pdf::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/pdf.png'); }
+.btn.expenditure-pdf::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/pdf.png'); }
+.btn.visit-pdf::before { background-image:url('https://img.icons8.com/ios-filled/100/ffffff/pdf.png'); }
+
+/* Force Desktop Layout on Mobile */
 @media (max-width: 768px) {
     html, body {
         width: 1400px;
         min-width: 1400px;
     }
-    body {
-        overflow-x: auto;
-    }
-
+    body { overflow-x:auto; }
+}
 </style>
 </head>
 
 <body>
-
 <canvas id="bgCanvas"></canvas>
 
 <div class="topbar">Cattle Management System</div>
 
 <button id="toggleBtn" class="toggle-btn disabled">NO ACTIVE CALL</button>
 
-<!-- Main 3x3 Grid -->
 <div class="grid">
-  <a class="btn" href="ANNA.html" target="_blank">Cattle Weigth Growth Analysis</a>
-  <a class="btn" id="sensorChartBtn" href="sensor_chart.html"  target="_blank">Environmental Safety Sensor Dashboard</a>
-  <a class="btn" href="tempchart2.html" target="_blank">Environmental Condition Chart</a>
-  <a class="btn" href="schedule.html" target="_blank">Medication Schedule Manager</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/18mjOo8xXIII-nqee21gaKGyeitE759aaZec3b6V9-B0/edit?gid=0#gid=0" target="_blank">Annual Water Requirement Prediction</a>
-  <a class="btn" href="DOCTOR.HTML" target="_blank">Veterinary Visit Records</a>
-  <a class="btn" href="investment.html" target="_blank">Farm Expenditure Entry</a>
-  <a class="btn" href="USER_DETAILS.HTML" target="_blank">Farm Activity & Health Records</a>
-  <a class="btn" href="hi.html" target="_blank">Live Sensor Monitoring</a>
-  <a class="btn" href="http://192.168.43.143" target="_blank">Live Farm Surveillance</a>
-   <a class="btn" href="age_track.html" target="_blank">Cattle Age Monitor</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/18mjOo8xXIII-nqee21gaKGyeitE759aaZec3b6V9-B0/edit?gid=0#gid=0" target="_blank">Temperature & Humidity Logs</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/1ABVxpoDeWM0YfklTgkM_j6i5taUiPGDfSwY5gAqIlyg/edit?gid=0#gid=0" target="_blank">Environmental Sensor Logs</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/1dfFH6jwJAfAGkkuUzJYXxOUNhmADsXDGI6XDhzCBm3o/edit?gid=0#gid=0" target="_blank">Cattle Records Sheet</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/1Q-m-pCDeCIWNwq235ONkD0vr6tqm7OSrABgPuI8ohyo/edit?gid=0#gid=0" target="_blank">Medication Records Sheet</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/18P3Db8ClOIe7FVOa3f60hnXI-RNr-6M4Q9U-dCHDx7A/edit?gid=0#gid=0" target="_blank">Farm Activity Logs Sheet</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/148Gbfay2ghh9d9TF3MfLbCUfYjm-vPf1Ajlx4BUhzqI/edit?gid=0#gid=0" target="_blank">Expenditure Records Sheet</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/1HzJ5DHJMAcuFK5P4D0DIZOv2RTUfyPWWnrlqUT5j3TQ/edit?gid=0#gid=0" target="_blank">Veterinary Visit Records Sheet</a>
-  <a class="btn" href="https://docs.google.com/spreadsheets/d/1xAFjYYaxs8HSCWgwN4RpKRMEGoMu-42yFQaI8pqSrAc/edit?gid=0#gid=0" target="_blank">Cattle Age Records Sheet</a>
-  <a class="btn" href="cow_pdf_1.html">Cattle Data Report (PDF)</a>
-  <a class="btn" href="temp_pdf.html" target="_blank">Temperature & Humidity Report (PDF)</a>
-  <a class="btn" href="gas_pdf.html" target="_blank">Gas & Air Quality Report (PDF)</a>
-  <a class="btn" href="INVECEMNT_PDF.HTML" target="_blank">Expenditure Summary Report (PDF)</a>
-  <a class="btn" href="visit.html" target="_blank">Veterinary Visit (PDF)</a>
-  
-  
-
+  <a class="btn cattle-growth" href="ANNA.html" target="_blank">Cattle Weight Growth Analysis</a>
+  <a class="btn sensor-dashboard" id="sensorChartBtn">Environmental Safety Sensor Dashboard</a>
+  <a class="btn environment-chart" href="tempchart2.html" target="_blank">Environmental Condition Chart</a>
+  <a class="btn schedule-manager" href="schedule.html" target="_blank">Medication Schedule Manager</a>
+  <a class="btn water-prediction" href="https://docs.google.com/spreadsheets/d/18mjOo8xXIII-nqee21gaKGyeitE759aaZec3b6V9-B0/edit?gid=0#gid=0" target="_blank">Annual Water Requirement Prediction</a>
+  <a class="btn veterinary-records" href="DOCTOR.HTML" target="_blank">Veterinary Visit Records</a>
+  <a class="btn farm-expenditure" href="investment.html" target="_blank">Farm Expenditure Entry</a>
+  <a class="btn farm-activity" href="USER_DETAILS.HTML" target="_blank">Farm Activity & Health Records</a>
+  <a class="btn live-sensor" href="hi.html" target="_blank">Live Sensor Monitoring</a>
+  <a class="btn live-surveillance" href="http://192.168.43.143" target="_blank">Live Farm Surveillance</a>
+  <a class="btn cattle-age" href="age_track.html" target="_blank">Cattle Age Monitor</a>
+  <a class="btn temp-humidity-logs" href="https://docs.google.com/spreadsheets/d/18mjOo8xXIII-nqee21gaKGyeitE759aaZec3b6V9-B0/edit?gid=0#gid=0" target="_blank">Temperature & Humidity Logs</a>
+  <a class="btn environment-logs" href="https://docs.google.com/spreadsheets/d/1ABVxpoDeWM0YfklTgkM_j6i5taUiPGDfSwY5gAqIlyg/edit?gid=0#gid=0" target="_blank">Environmental Sensor Logs</a>
+  <a class="btn cattle-records" href="https://docs.google.com/spreadsheets/d/1dfFH6jwJAfAGkkuUzJYXxOUNhmADsXDGI6XDhzCBm3o/edit?gid=0#gid=0" target="_blank">Cattle Records Sheet</a>
+  <a class="btn medication-records" href="https://docs.google.com/spreadsheets/d/1Q-m-pCDeCIWNwq235ONkD0vr6tqm7OSrABgPuI8ohyo/edit?gid=0#gid=0" target="_blank">Medication Records Sheet</a>
+  <a class="btn activity-logs" href="https://docs.google.com/spreadsheets/d/18P3Db8ClOIe7FVOa3f60hnXI-RNr-6M4Q9U-dCHDx7A/edit?gid=0#gid=0" target="_blank">Farm Activity Logs Sheet</a>
+  <a class="btn expenditure-records" href="https://docs.google.com/spreadsheets/d/148Gbfay2ghh9d9TF3MfLbCUfYjm-vPf1Ajlx4BUhzqI/edit?gid=0#gid=0" target="_blank">Expenditure Records Sheet</a>
+  <a class="btn vet-visit-records" href="https://docs.google.com/spreadsheets/d/1HzJ5DHJMAcuFK5P4D0DIZOv2RTUfyPWWnrlqUT5j3TQ/edit?gid=0#gid=0" target="_blank">Veterinary Visit Records Sheet</a>
+  <a class="btn cattle-age-records" href="https://docs.google.com/spreadsheets/d/1xAFjYYaxs8HSCWgwN4RpKRMEGoMu-42yFQaI8pqSrAc/edit?gid=0#gid=0" target="_blank">Cattle Age Records Sheet</a>
+  <a class="btn cattle-pdf" href="cow_pdf_1.html" target="_blank">Cattle Data Report (PDF)</a>
+  <a class="btn temp-pdf" href="temp_pdf.html" target="_blank">Temperature & Humidity Report (PDF)</a>
+  <a class="btn gas-pdf" href="gas_pdf.html" target="_blank">Gas & Air Quality Report (PDF)</a>
+  <a class="btn expenditure-pdf" href="INVECEMNT_PDF.HTML" target="_blank">Expenditure Summary Report (PDF)</a>
+  <a class="btn visit-pdf" href="visit.html" target="_blank">Veterinary Visit (PDF)</a>
 </div>
-
-
 
 <script>
 // Toggle button
@@ -233,9 +259,7 @@ toggleBtn.addEventListener('click', () => {
   }
 });
 
-
-
-// Sensor chart
+// Sensor Dashboard Button
 const sensorChartBtn = document.getElementById("sensorChartBtn");
 sensorChartBtn.addEventListener('click', (e)=>{
     e.preventDefault();
@@ -244,23 +268,14 @@ sensorChartBtn.addEventListener('click', (e)=>{
     window.open(url, '_blank');
 });
 
-// Multi-Color Particle Glow Background
+// Particle Glow Background
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 function randomColor() {
-    const colors = [
-        '255,0,0',
-        '255,165,0',
-        '255,255,0',
-        '0,255,255',
-        '0,128,255',
-        '128,0,255',
-        '255,0,255',
-        '0,255,128'
-    ];
+    const colors = ['255,0,0','255,165,0','255,255,0','0,255,255','0,128,255','128,0,255','255,0,255','0,255,128'];
     return colors[Math.floor(Math.random()*colors.length)];
 }
 
@@ -291,7 +306,6 @@ class Particle {
 
 const particles = [];
 for(let i=0;i<100;i++) particles.push(new Particle());
-
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   particles.forEach(p=>{p.update(); p.draw();});
@@ -307,7 +321,3 @@ window.addEventListener('resize', ()=>{
 
 </body>
 </html>
-
-
-
-
