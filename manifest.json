@@ -1,11 +1,11 @@
 {
-  "name": "My Secure App",          // Full app name
-  "short_name": "MyApp",            // Name shown on home screen
-  "start_url": "index.html",         // Page that opens when launched
-  "display": "standalone",          // Key! Opens app without browser bar
-  "background_color": "#ffffff",    // Splash screen background
-  "theme_color": "#2575fc",         // Toolbar color when loading
-  "icons": [                        // App icon
+  "name": "My Secure App",         
+  "short_name": "MyApp",            
+  "start_url": "index.html",         
+  "display": "standalone",          
+  "background_color": "#ffffff",    
+  "theme_color": "#2575fc",        
+  "icons": [                        
     {
       "src": "pin.jpg",
       "sizes": "192x192",
@@ -13,3 +13,4 @@
     }
   ]
 }
+
