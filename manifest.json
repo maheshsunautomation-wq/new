@@ -7,9 +7,10 @@
   "theme_color": "#2575fc",        
   "icons": [                        
     {
-      "src": "icon-192.png.png",
+      "src": "pin.jpg",
       "sizes": "192x192",
       "type": "image/jpeg"
     }
   ]
 }
+
