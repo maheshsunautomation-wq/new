@@ -1,6 +1,6 @@
 {
-  "name": "My Secure Smart Cattle Tracker App",         
-  "short_name": "MyApp",            
+  "name": "Smart Cattle Tracker",         
+  "short_name": "Dairy Farm",            
   "start_url": "index.html",         
   "display": "standalone",          
   "background_color": "#ffffff",    
@@ -13,5 +13,6 @@
     }
   ]
 }
+
 
 
