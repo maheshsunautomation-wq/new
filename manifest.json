@@ -1,5 +1,5 @@
 {
-  "name": "My Secure App",         
+  "name": "My Secure Smart Cattle Tracker App",         
   "short_name": "MyApp",            
   "start_url": "index.html",         
   "display": "standalone",          
@@ -13,4 +13,5 @@
     }
   ]
 }
+
 
