@@ -1,6 +1,6 @@
 {
   "name": "Smart Cattle Tracker",         
-  "short_name": "Dairy Farm",            
+  "short_name": "Smart Cattle Tracker",            
   "start_url": "index.html",         
   "display": "standalone",          
   "background_color": "#ffffff",    
@@ -13,6 +13,7 @@
     }
   ]
 }
+
 
 
 
